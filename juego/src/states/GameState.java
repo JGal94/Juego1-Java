@@ -22,7 +22,7 @@ public class GameState {
     
     public GameState(){
         
-        player = new Player(new Vector2D(100,500), Assets.player);
+        player = new Player(new Vector2D(100,500), new Vector2D(),5, Assets.player);
         alien = new Alien(new Vector2D(390,200), Assets.alien, player);
         
         

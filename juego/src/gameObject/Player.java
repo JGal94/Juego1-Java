@@ -4,157 +4,63 @@
  */
 package gameObject;
 
+
 import input.KeyBoard;
 import java.awt.Graphics;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import math.Vector2D;
+import java.awt.Graphics2D;
+import graphics.Assets;
 
 /**
  *
  * @author juanf
  */
-public class Player extends GameObject {
+public class Player extends MovinObject {
     
+    private Vector2D heading;
+    private Vector2D aceleration;
     
+    private final double ACC = 0.08;
 
-    public Player(Vector2D position, BufferedImage texture) {
-        super(position, texture);
+    public Player(Vector2D position, Vector2D velocity,double maxVel, BufferedImage texture) {
+        super(position, velocity, maxVel, texture);
+        
+        heading = new Vector2D(0,1);
+        aceleration = new Vector2D();
+        
         
         
     }
-
+    
+   
     @Override
     public void update() {
-       
-        switch (position.getS()){
-            
-            case 0:
-                if(KeyBoard.RIGHTD){
-           position.setX(position.getX()+1);
-           
-       }else if(KeyBoard.LEFTA){
-           position.setX(position.getX()-1);
-           
-       }else if(KeyBoard.UPW){
-           position.setY(position.getY()-1);
-           
-       }else if(KeyBoard.DOWNS){
-           position.setY(position.getY()+1);
-           
-       }
-                
-                break;
-             
-            
-            case 1:
-                if(KeyBoard.RIGHTD){
-                    for(int i=0;i<2;i++){
-           position.setX(position.getX()+1);
-           
-                    }
-           
-       }else if(KeyBoard.LEFTA){
-           for(int i=0;i<2;i++){
-           position.setX(position.getX()-1);
-           }
-            
-           
-       }else if(KeyBoard.UPW){
-           for(int i=0;i<2;i++){
-           position.setY(position.getY()-1);
-           }
-           
-           
-       }else if(KeyBoard.DOWNS){
-           for(int i=0;i<2;i++){
-           position.setY(position.getY()+1);
-           }
-           
-           
-       }
-                
-                break;
-                
-                
-            case 2:
-                if(KeyBoard.RIGHTD){
-                    for(int i=0;i<4;i++){
-           position.setX(position.getX()+1);
-                    }
-           
-       }else if(KeyBoard.LEFTA){
-for(int i=0;i<4;i++){
-           position.setX(position.getX()-1);
-}
-           
-       }else if(KeyBoard.UPW){
-for(int i=0;i<4;i++){
-           position.setY(position.getY()-1);
-}
-           
-       }else if(KeyBoard.DOWNS){
-           for(int i=0;i<4;i++){
-           position.setY(position.getY()+1);
-           }
-           
-       }
-                
-                
-                break;
-                
-                
-            case 3:
-                
-                if(KeyBoard.RIGHTD){
-           for(int i=0;i<8;i++){
-           position.setX(position.getX()+1);
-           }
-           
-       }else if(KeyBoard.LEFTA){
-           for(int i=0;i<8;i++){
-            position.setX(position.getX()-1);
-           }
-           
-       }else if(KeyBoard.UPW){
-           for(int i=0;i<8;i++){
-           position.setY(position.getY()-1);
-           }
-           
-       }else if(KeyBoard.DOWNS){
-           for(int i=0;i<8;i++){
-           position.setY(position.getY()+1);
-           }
-           
-       }
-                
-                break;
-                
-                
-            default:
-                break;
-            
-            
-        }
-        if (position.getX() >=810){
-            position.setX(0);
-        }else if(position.getX() <=-10){
-            position.setX(800);
-        }
-        if (position.getY() >=610){
-            position.setY(0);
-        }else if(position.getY()<=-30){
-            position.setY(600);
-        }
         
-        if (KeyBoard.SPEED && position.getS() == 3) {
-        // Si se cumple la condición, restablece position.getS() a 0
-        position.setS(0);
-    }
-    // Si KeyBoard.SPEED está presionado y position.getS() no es 3, aumenta position.getS()
-    else if (KeyBoard.SPEED && position.getS() < 3) {
-        position.setS(position.getS() + 1);
-    }
-        System.out.println(position.getS());
+        
+        if(KeyBoard.RIGHTD)
+            angle += Math.PI/20;
+        if(KeyBoard.LEFTA)
+            angle -= Math.PI/20;
+        
+        if(KeyBoard.UPW){
+            aceleration = heading.scale(ACC);
+        }else{
+            if(velocity.getMagnitude()!= 0){
+                aceleration = (velocity.scale(-1).normalize().scale(ACC));
+            }
+                    
+                    }
+        velocity = velocity.add(aceleration);
+        velocity.limit(maxVel);
+        
+        heading = heading.setDirection(angle-Math.PI/2);
+        position = position.add(velocity);
+        position = position.lmt(position);
+        
+        
+       
         
        
        
@@ -162,7 +68,13 @@ for(int i=0;i<4;i++){
 
     @Override
     public void draw(Graphics g) {
-        g.drawImage(texture, (int)position.getX(), (int)position.getY(), null);
+       Graphics2D g2d = (Graphics2D)g;
+		
+		at = AffineTransform.getTranslateInstance(position.getX(), position.getY());
+		
+		at.rotate(angle, Assets.player.getWidth()/2, Assets.player.getHeight()/2);
+		
+		g2d.drawImage(Assets.player, at, null);
     }
     
     
