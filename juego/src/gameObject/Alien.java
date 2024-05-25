@@ -45,16 +45,7 @@ public class Alien extends GameObject{
         }
         
         
-        if (position.getX() >=810){
-            position.setX(0);
-        }else if(position.getX() <=-10){
-            position.setX(800);
-        }
-        if (position.getY() >=610){
-            position.setY(0);
-        }else if(position.getY()<=-30){
-            position.setY(600);
-        }
+        position = position.lmt(position);
         
          
     }
